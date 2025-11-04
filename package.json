@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint",
+    "lint": "biome check .",
+    "format": "biome format --write .",
     "prepare": "husky"
   },
   "dependencies": {
@@ -15,14 +16,13 @@
     "next": "16.0.1"
   },
   "devDependencies": {
+    "@biomejs/biome": "2.3.3",
     "@commitlint/cli": "^20.1.0",
     "@commitlint/config-conventional": "^20.0.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "eslint": "^9",
-    "eslint-config-next": "16.0.1",
     "husky": "^9.1.7",
     "tailwindcss": "^4",
     "typescript": "^5"
