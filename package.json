@@ -16,6 +16,7 @@
     "db:studio": "drizzle-kit studio",
     "db:check": "drizzle-kit check",
     "db:drop": "drizzle-kit drop",
+    "vercel-build": "bun run db:migrate && bun run build",
     "prepare": "husky"
   },
   "dependencies": {
