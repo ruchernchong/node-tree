@@ -1,9 +1,7 @@
 import Link from "next/link";
-import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { getLinkById } from "@/actions/links";
 import { LinkForm } from "@/components/links/link-form";
-import { getSession } from "@/lib/auth/session";
 
 interface EditLinkPageProps {
   params: Promise<{ id: string }>;
@@ -43,13 +41,7 @@ const EditLinkContent = async ({
   );
 };
 
-const EditLinkPage = async ({ params }: EditLinkPageProps) => {
-  const session = await getSession();
-
-  if (!session?.user) {
-    redirect("/");
-  }
-
+const EditLinkPage = ({ params }: EditLinkPageProps) => {
   return (
     <div className="flex flex-col gap-6 max-w-2xl">
       <div className="flex items-center gap-4">

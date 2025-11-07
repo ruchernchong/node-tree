@@ -1,15 +1,8 @@
 import Link from "next/link";
-import { redirect } from "next/navigation";
+import { Suspense } from "react";
 import { LinkForm } from "@/components/links/link-form";
-import { getSession } from "@/lib/auth/session";
 
-const NewLinkPage = async () => {
-  const session = await getSession();
-
-  if (!session?.user) {
-    redirect("/");
-  }
-
+const NewLinkPage = () => {
   return (
     <div className="flex flex-col gap-6 max-w-2xl">
       <div className="flex items-center gap-4">
@@ -23,7 +16,9 @@ const NewLinkPage = async () => {
       </div>
 
       <div className="rounded-lg border bg-card p-6">
-        <LinkForm mode="create" />
+        <Suspense fallback={null}>
+          <LinkForm mode="create" />
+        </Suspense>
       </div>
     </div>
   );
