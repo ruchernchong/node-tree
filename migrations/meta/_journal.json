@@ -22,6 +22,13 @@
       "when": 1762535529733,
       "tag": "0002_worthless_spyke",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1762535717961,
+      "tag": "0003_unknown_wild_child",
+      "breakpoints": true
     }
   ]
 }

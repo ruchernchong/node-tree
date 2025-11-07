@@ -17,6 +17,8 @@ export const users = sqliteTable("users", {
     .$onUpdate(() => /* @__PURE__ */ new Date())
     .notNull(),
   lastLoginMethod: text("last_login_method"),
+  username: text("username").unique(),
+  displayUsername: text("display_username"),
 });
 
 export const sessions = sqliteTable("sessions", {

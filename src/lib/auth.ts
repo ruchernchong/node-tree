@@ -1,7 +1,7 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
-import { lastLoginMethod, oAuthProxy } from "better-auth/plugins";
+import { lastLoginMethod, oAuthProxy, username } from "better-auth/plugins";
 import { passkey } from "better-auth/plugins/passkey";
 import { db } from "@/db";
 
@@ -16,6 +16,7 @@ export const auth = betterAuth({
     }),
     oAuthProxy(),
     passkey(),
+    username(),
     nextCookies(), // Make sure this is the last plugin in the array
   ],
   emailAndPassword: {
