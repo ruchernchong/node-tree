@@ -1,8 +1,7 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { oAuthProxy } from "better-auth/plugins";
+import { lastLoginMethod, oAuthProxy } from "better-auth/plugins";
 import { passkey } from "better-auth/plugins/passkey";
-import { lastLoginMethod } from "better-auth/plugins";
 import { db } from "@/db";
 
 export const auth = betterAuth({
@@ -26,11 +25,7 @@ export const auth = betterAuth({
   },
   plugins: [
     oAuthProxy(),
-    passkey({
-      rpID: "localhost",
-      rpName: "Node Tree",
-      origin: "http://localhost:3000",
-    }),
+    passkey(),
     lastLoginMethod({
       storeInDatabase: true,
     }),
