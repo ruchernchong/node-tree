@@ -1,7 +1,15 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { LinkForm } from "@/components/links/link-form";
+import { getSession } from "@/lib/auth/session";
 
-const NewLinkPage = () => {
+const NewLinkPage = async () => {
+  const session = await getSession();
+
+  if (!session?.user) {
+    redirect("/");
+  }
+
   return (
     <div className="flex flex-col gap-6 max-w-2xl">
       <div className="flex items-center gap-4">

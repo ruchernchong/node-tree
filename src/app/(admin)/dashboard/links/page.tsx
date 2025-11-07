@@ -1,7 +1,9 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { getLinks } from "@/actions/links";
 import { SortableLinksList } from "@/components/links/sortable-links-list";
+import { getSession } from "@/lib/auth/session";
 
 const LinksContent = async () => {
   const links = await getLinks();
@@ -24,7 +26,13 @@ const LinksContent = async () => {
   );
 };
 
-const LinksPage = () => {
+const LinksPage = async () => {
+  const session = await getSession();
+
+  if (!session?.user) {
+    redirect("/");
+  }
+
   return (
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">

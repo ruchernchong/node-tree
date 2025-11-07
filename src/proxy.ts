@@ -1,33 +1,18 @@
+import { getSessionCookie } from "better-auth/cookies";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
 
 export const proxy = async (request: NextRequest) => {
   const path = request.nextUrl.pathname;
 
-  // Get session from Better Auth
-  const session = await auth.api.getSession({
-    headers: request.headers,
-  });
+  // Protect /admin and /dashboard routes
+  if (path.startsWith("/admin") || path.startsWith("/dashboard")) {
+    // Quick optimistic check for session existence (no DB call)
+    // NOTE: This only checks if a session cookie exists, NOT if it's valid
+    // Actual session validation happens in each dashboard page/route
+    const sessionCookie = getSessionCookie(request);
 
-  // Protect /admin routes
-  if (path.startsWith("/admin")) {
-    // Check if user is authenticated
-    if (!session?.user) {
-      return NextResponse.redirect(new URL("/", request.url));
-    }
-
-    // Phase 1: Check if user is the admin
-    const adminUserId = process.env.ADMIN_USER_ID;
-    if (!adminUserId) {
-      console.error("ADMIN_USER_ID not configured");
-      return NextResponse.redirect(new URL("/", request.url));
-    }
-
-    if (session.user.id !== adminUserId) {
-      console.warn(
-        `Unauthorized admin access attempt by user: ${session.user.id}`,
-      );
+    if (!sessionCookie) {
       return NextResponse.redirect(new URL("/", request.url));
     }
   }

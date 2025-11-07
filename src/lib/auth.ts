@@ -1,5 +1,6 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import { nextCookies } from "better-auth/next-js";
 import { lastLoginMethod, oAuthProxy } from "better-auth/plugins";
 import { passkey } from "better-auth/plugins/passkey";
 import { db } from "@/db";
@@ -7,7 +8,16 @@ import { db } from "@/db";
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
     provider: "sqlite",
+    usePlural: true,
   }),
+  plugins: [
+    lastLoginMethod({
+      storeInDatabase: true,
+    }),
+    oAuthProxy(),
+    passkey(),
+    nextCookies(), // Make sure this is the last plugin in the array
+  ],
   emailAndPassword: {
     enabled: true,
   },
@@ -23,11 +33,4 @@ export const auth = betterAuth({
       redirectURI: `${process.env.BETTER_AUTH_URL}/api/auth/callback/google`,
     },
   },
-  plugins: [
-    oAuthProxy(),
-    passkey(),
-    lastLoginMethod({
-      storeInDatabase: true,
-    }),
-  ],
 });

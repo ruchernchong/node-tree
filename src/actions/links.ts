@@ -5,12 +5,12 @@ import { nanoid } from "nanoid";
 import { revalidatePath } from "next/cache";
 import { db } from "@/db";
 import { link } from "@/db/schema";
+import { getCurrentUserId } from "@/lib/auth/session";
 import { type LinkFormData, linkSchema } from "@/lib/schemas/link";
 
-// Hardcoded user ID for all operations
-const HARDCODED_USER_ID = "temp-user-id";
-
 export const createLink = async (data: LinkFormData) => {
+  const userId = await getCurrentUserId();
+
   // Validate input
   const validated = linkSchema.parse(data);
 
@@ -18,9 +18,7 @@ export const createLink = async (data: LinkFormData) => {
   const existing = await db
     .select()
     .from(link)
-    .where(
-      and(eq(link.userId, HARDCODED_USER_ID), eq(link.slug, validated.slug)),
-    )
+    .where(and(eq(link.userId, userId), eq(link.slug, validated.slug)))
     .limit(1);
 
   if (existing.length > 0) {
@@ -31,7 +29,7 @@ export const createLink = async (data: LinkFormData) => {
   const maxOrder = await db
     .select({ order: link.order })
     .from(link)
-    .where(eq(link.userId, HARDCODED_USER_ID))
+    .where(eq(link.userId, userId))
     .orderBy(desc(link.order))
     .limit(1);
 
@@ -42,7 +40,7 @@ export const createLink = async (data: LinkFormData) => {
     .insert(link)
     .values({
       id: nanoid(),
-      userId: HARDCODED_USER_ID,
+      userId,
       slug: validated.slug,
       title: validated.title,
       url: validated.url,
@@ -61,6 +59,8 @@ export const createLink = async (data: LinkFormData) => {
 };
 
 export const updateLink = async (id: string, data: LinkFormData) => {
+  const userId = await getCurrentUserId();
+
   // Validate input
   const validated = linkSchema.parse(data);
 
@@ -68,7 +68,7 @@ export const updateLink = async (id: string, data: LinkFormData) => {
   const existing = await db
     .select()
     .from(link)
-    .where(and(eq(link.id, id), eq(link.userId, HARDCODED_USER_ID)))
+    .where(and(eq(link.id, id), eq(link.userId, userId)))
     .limit(1);
 
   if (existing.length === 0) {
@@ -80,9 +80,7 @@ export const updateLink = async (id: string, data: LinkFormData) => {
     const slugExists = await db
       .select()
       .from(link)
-      .where(
-        and(eq(link.userId, HARDCODED_USER_ID), eq(link.slug, validated.slug)),
-      )
+      .where(and(eq(link.userId, userId), eq(link.slug, validated.slug)))
       .limit(1);
 
     if (slugExists.length > 0) {
@@ -104,7 +102,7 @@ export const updateLink = async (id: string, data: LinkFormData) => {
       startDate: validated.startDate,
       endDate: validated.endDate,
     })
-    .where(and(eq(link.id, id), eq(link.userId, HARDCODED_USER_ID)))
+    .where(and(eq(link.id, id), eq(link.userId, userId)))
     .returning();
 
   revalidatePath("/dashboard/links");
@@ -113,10 +111,12 @@ export const updateLink = async (id: string, data: LinkFormData) => {
 };
 
 export const deleteLink = async (id: string) => {
+  const userId = await getCurrentUserId();
+
   // Delete link
   const [deleted] = await db
     .delete(link)
-    .where(and(eq(link.id, id), eq(link.userId, HARDCODED_USER_ID)))
+    .where(and(eq(link.id, id), eq(link.userId, userId)))
     .returning();
 
   if (!deleted) {
@@ -128,20 +128,24 @@ export const deleteLink = async (id: string) => {
 };
 
 export const getLinks = async () => {
+  const userId = await getCurrentUserId();
+
   const links = await db
     .select()
     .from(link)
-    .where(eq(link.userId, HARDCODED_USER_ID))
+    .where(eq(link.userId, userId))
     .orderBy(link.order);
 
   return links;
 };
 
 export const getLinkById = async (id: string) => {
+  const userId = await getCurrentUserId();
+
   const [foundLink] = await db
     .select()
     .from(link)
-    .where(and(eq(link.id, id), eq(link.userId, HARDCODED_USER_ID)))
+    .where(and(eq(link.id, id), eq(link.userId, userId)))
     .limit(1);
 
   if (!foundLink) {
@@ -152,11 +156,13 @@ export const getLinkById = async (id: string) => {
 };
 
 export const toggleLinkActive = async (id: string) => {
+  const userId = await getCurrentUserId();
+
   // Get current link
   const [currentLink] = await db
     .select()
     .from(link)
-    .where(and(eq(link.id, id), eq(link.userId, HARDCODED_USER_ID)))
+    .where(and(eq(link.id, id), eq(link.userId, userId)))
     .limit(1);
 
   if (!currentLink) {
@@ -167,7 +173,7 @@ export const toggleLinkActive = async (id: string) => {
   const [updatedLink] = await db
     .update(link)
     .set({ isActive: !currentLink.isActive })
-    .where(and(eq(link.id, id), eq(link.userId, HARDCODED_USER_ID)))
+    .where(and(eq(link.id, id), eq(link.userId, userId)))
     .returning();
 
   revalidatePath("/dashboard/links");
@@ -175,13 +181,15 @@ export const toggleLinkActive = async (id: string) => {
 };
 
 export const reorderLinks = async (linkIds: string[]) => {
+  const userId = await getCurrentUserId();
+
   // Update order for each link
   await Promise.all(
     linkIds.map((linkId, index) =>
       db
         .update(link)
         .set({ order: index })
-        .where(and(eq(link.id, linkId), eq(link.userId, HARDCODED_USER_ID))),
+        .where(and(eq(link.id, linkId), eq(link.userId, userId))),
     ),
   );
 
