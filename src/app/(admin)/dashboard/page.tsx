@@ -1,7 +1,8 @@
 import Link from "next/link";
+import { Suspense } from "react";
 import { getLinks } from "@/actions/links";
 
-const DashboardPage = async () => {
+const DashboardContent = async () => {
   const links = await getLinks();
 
   // Calculate statistics
@@ -14,17 +15,7 @@ const DashboardPage = async () => {
   const clicksToday = 0;
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold">Dashboard</h1>
-        <Link
-          href="/dashboard/links/new"
-          className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
-        >
-          Create New Link
-        </Link>
-      </div>
-
+    <>
       {/* Stats Grid */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <div className="rounded-lg border bg-card p-6">
@@ -119,6 +110,26 @@ const DashboardPage = async () => {
           </Link>
         </div>
       )}
+    </>
+  );
+};
+
+const DashboardPage = () => {
+  return (
+    <div className="flex flex-col gap-6">
+      <div className="flex items-center justify-between">
+        <h1 className="text-3xl font-bold">Dashboard</h1>
+        <Link
+          href="/dashboard/links/new"
+          className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+        >
+          Create New Link
+        </Link>
+      </div>
+
+      <Suspense fallback={null}>
+        <DashboardContent />
+      </Suspense>
     </div>
   );
 };
