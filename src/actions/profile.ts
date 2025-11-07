@@ -4,7 +4,7 @@ import { eq } from "drizzle-orm";
 import { nanoid } from "nanoid";
 import { revalidatePath } from "next/cache";
 import { db } from "@/db";
-import { profileSettings, user } from "@/db/schema";
+import { profileSettings, users } from "@/db/schema";
 import { getCurrentUserId } from "@/lib/auth/session";
 import { type ProfileFormData, profileSchema } from "@/lib/schemas/profile";
 
@@ -26,8 +26,8 @@ export const getOrCreateProfileSettings = async () => {
   // Get user's name from auth table
   const [currentUser] = await db
     .select()
-    .from(user)
-    .where(eq(user.id, userId))
+    .from(users)
+    .where(eq(users.id, userId))
     .limit(1);
 
   if (!currentUser) {

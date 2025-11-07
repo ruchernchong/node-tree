@@ -1,12 +1,12 @@
 import { sql } from "drizzle-orm";
 import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
-import { user } from "./auth";
+import { users } from "./auth";
 
 export const link = sqliteTable("link", {
   id: text().primaryKey(),
   userId: text()
     .notNull()
-    .references(() => user.id, { onDelete: "cascade" }),
+    .references(() => users.id, { onDelete: "cascade" }),
   slug: text().notNull(),
   title: text().notNull(),
   url: text().notNull(),
@@ -31,7 +31,7 @@ export const profileSettings = sqliteTable("profile_settings", {
   userId: text()
     .notNull()
     .unique()
-    .references(() => user.id, { onDelete: "cascade" }),
+    .references(() => users.id, { onDelete: "cascade" }),
   displayName: text().notNull(),
   bio: text(),
   theme: text().notNull().default("dark"),
