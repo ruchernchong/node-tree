@@ -4,9 +4,7 @@ import type { auth } from "@/lib/auth";
  * Better Auth Session type
  * Inferred from the auth instance
  */
-export type Session = Awaited<
-	ReturnType<typeof auth.api.getSession>
->;
+export type Session = Awaited<ReturnType<typeof auth.api.getSession>>;
 
 /**
  * Better Auth User type
@@ -19,5 +17,5 @@ export type User = NonNullable<Session>["user"];
  * Used in authenticated contexts
  */
 export type AuthenticatedSession = Session & {
-	user: User;
+  user: User;
 };
